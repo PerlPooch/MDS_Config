@@ -32,7 +32,7 @@ int main(){
  assert(!config.setReadOnly("pwm",value["v"]));assert(!config.setReadOnly("unknown",value["v"]));
  value["v"]=256;assert(!config.setReadOnly("gcc",value["v"]));assert(config.get("gcc").as<int>()==8);
  value["v"]="8";assert(!config.setReadOnly("gcc",value["v"]));
- assert(config.setup());assert(config.save());JsonDocument saved;assert(!deserializeJson(saved,LittleFS.files["/config.json"]));assert(saved["gcc"].isNull());assert(saved["pwm"].as<int>()==255);
+ assert(config.begin());assert(config.save());JsonDocument saved;assert(!deserializeJson(saved,LittleFS.files["/config.json"]));assert(saved["gcc"].isNull());assert(saved["pwm"].as<int>()==255);
  LittleFS.files["/config.json"]="{\"schema\":1,\"pwm\":64,\"gcc\":200}";
  assert(config.load());assert(config.get("gcc").as<int>()==8&&config.get("pwm").as<int>()==64);
  puts("PASS: implementation RO updates preserve user-write rejection, enforce types/ranges, and remain independent of persistence.");

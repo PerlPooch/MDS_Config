@@ -39,7 +39,7 @@ int main(){
  assert(output.text.find("password [RW] = [redacted]")!=String::npos);
  assert(output.text.find("apiKey [RO] = [redacted]")!=String::npos);
  assert(output.text.find("secret")==String::npos);
- assert(config.setup());assert(config.save());assert(LittleFS.files["/config.json"].find("secret-updated")!=String::npos);
+ assert(config.begin());assert(config.save());assert(LittleFS.files["/config.json"].find("secret-updated")!=String::npos);
  Capture stored;config.print(stored);assert(stored.text.find("secret-updated")!=String::npos);
  puts("PASS: current-value/access dump, sensitive field redaction, legacy raw-file print preserved, and secrets still persist normally.");
 }

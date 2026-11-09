@@ -37,10 +37,10 @@ struct MDS_ConfigSetting {
 	bool persistent;
 	const char* defaultText;
 	uint32_t defaultUnsigned;
-	uint32_t minimum;  // Text length or unsigned/boolean value, inclusive.
+	uint32_t minimum; // Text length or unsigned/boolean value, inclusive.
 	uint32_t maximum;
-	bool required = false;  // Require this field when loading a stored document.
-	bool sensitive = false; // Redact this setting from diagnostic dumps.
+	bool required = false;                         // Require this field when loading a stored document.
+	bool sensitive = false;                        // Redact this setting from diagnostic dumps.
 	bool (*validator)(JsonVariantConst) = nullptr; // Optional application value check.
 
 	// Signed fields use separate defaults and bounds; older aggregate initializers remain valid.

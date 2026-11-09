@@ -31,7 +31,7 @@ int main() {
   {"status", Type::Signed, Access::ReadOnly, false, nullptr, 0, 0, 0}
  };
  MDS_Config config;
- assert(config.setSettings(definitions) && config.setup());
+ assert(config.setSettings(definitions) && config.begin());
  assert(config.get("stored").is<int64_t>() && config.get("stored").as<int64_t>() == 0);
  JsonDocument edit;
  for (int64_t number : {INT64_MIN, int64_t(-432000), int64_t(0), INT64_MAX}) {
@@ -56,7 +56,7 @@ int main() {
  assert(!deserializeJson(saved, LittleFS.files["/config.json"]));
  assert(saved["stored"].as<int64_t>() == -42 && saved["volatile"].isUnbound() && saved["status"].isUnbound());
  MDS_Config restored;
- assert(restored.setSettings(definitions) && restored.setup() && restored.load());
+ assert(restored.setSettings(definitions) && restored.begin() && restored.load());
  assert(restored.get("stored").as<int64_t>() == -42 && restored.get("volatile").as<int64_t>() == 0);
  auto bounded = definitions[0];
  bounded.defaultSigned = -5; bounded.minimumSigned = -10; bounded.maximumSigned = 10;

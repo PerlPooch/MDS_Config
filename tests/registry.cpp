@@ -40,9 +40,9 @@ int main(){
  input["v"]=123;assert(!config.set("name",input["v"]));assert(!config.set("runtime",input["v"]));
  input["v"]=-1;assert(!config.set("runtime",input["v"]));
  input["v"]=99;assert(config.set("runtime",input["v"]));
- assert(config.setup());assert(config.save());
+ assert(config.begin());assert(config.save());
  JsonDocument saved;assert(!deserializeJson(saved,LittleFS.files["/config.json"]));assert(saved.size()==2);assert(saved["schema"].as<int>()==1);assert(saved["runtime"].isNull());
- MDS_Config restored;assert(restored.setSettings(definitions));assert(restored.setup());assert(restored.load());assert(strcmp(restored.get("name").as<const char*>(),"New Name")==0);assert(restored.get("runtime").as<int>()==5);
+ MDS_Config restored;assert(restored.setSettings(definitions));assert(restored.begin());assert(restored.load());assert(strcmp(restored.get("name").as<const char*>(),"New Name")==0);assert(restored.get("runtime").as<int>()==5);
  for(const char* bad:{"{}","[]","{\"schema\":2,\"name\":\"Bad\"}","{\"schema\":\"1\"}","{\"schema\":1,\"name\":null}","{\"schema\":1,\"name\":false}","{\"schema\":1,\"name\":\"\"}","{\"schema\":1,\"name\":\"A\\u0000B\"}"}){
   LittleFS.files["/config.json"]=bad;assert(!restored.load());assert(strcmp(restored.get("name").as<const char*>(),"New Name")==0);assert(strlen(restored.lastError())>0);
  }
@@ -50,12 +50,12 @@ int main(){
  assert(restored.load());assert(strcmp(restored.get("name").as<const char*>(),"Legacy")==0);assert(restored.get("runtime").as<int>()==5);
  LittleFS.files["/config.json"]="{\"schema\":1}";assert(restored.load());assert(strcmp(restored.get("name").as<const char*>(),"Legacy")==0);
  bool callback=false;
- restored.setSetConfigCallback([&](JsonDocument&){callback=true;});assert(strstr(restored.lastError(),"mix"));
- restored.setGetConfigCallback([&](JsonDocument&){callback=true;});assert(strstr(restored.lastError(),"mix"));
+ restored.setLoadCallback([&](JsonDocument&){callback=true;});assert(strstr(restored.lastError(),"mix"));
+ restored.setSaveCallback([&](JsonDocument&){callback=true;});assert(strstr(restored.lastError(),"mix"));
  assert(restored.load());assert(restored.save());assert(!callback);
- MDS_Config legacy;legacy.setSetConfigCallback([](JsonDocument&){});assert(!legacy.setSettings(definitions));
- legacy.setSetConfigCallback(nullptr);legacy.setGetConfigCallback([](JsonDocument&){});assert(!legacy.setSettings(definitions));
- legacy.setGetConfigCallback(nullptr);assert(legacy.setSettings(definitions));
+ MDS_Config legacy;legacy.setLoadCallback([](JsonDocument&){});assert(!legacy.setSettings(definitions));
+ legacy.setLoadCallback(nullptr);legacy.setSaveCallback([](JsonDocument&){});assert(!legacy.setSettings(definitions));
+ legacy.setSaveCallback(nullptr);assert(legacy.setSettings(definitions));
  auto invalid=definitions[0];invalid.defaultUnsigned=2;assert(!restored.setSettings(&invalid,1));
  invalid=definitions[0];invalid.key=nullptr;assert(!restored.setSettings(&invalid,1));
  invalid=definitions[0];invalid.minimum=2;assert(!restored.setSettings(&invalid,1));
@@ -64,6 +64,6 @@ int main(){
  assert(!restored.setSettings(nullptr,0));assert(restored.get("schema").as<int>()==1);assert(strcmp(restored.get("name").as<const char*>(),"Legacy")==0);
  // Read-only does not imply persisted or required. Persisted read-only values are validated but never imported.
  const MDS_ConfigSetting readOnly[]={ {"version",Type::Unsigned,Access::ReadOnly,true,nullptr,1,0,10} };
- MDS_Config ro;assert(ro.setSettings(readOnly));assert(ro.setup());LittleFS.files["/config.json"]="{\"version\":2}";assert(ro.load());assert(ro.get("version").as<int>()==1);
+ MDS_Config ro;assert(ro.setSettings(readOnly));assert(ro.begin());LittleFS.files["/config.json"]="{\"version\":2}";assert(ro.load());assert(ro.get("version").as<int>()==1);
  puts("PASS: registry/defaults, RO/RW enforcement, persistence independent of access, strict validation, atomic load rejection, legacy JSON compatibility, metadata rejection, and mixed-mode rejection in both directions.");
 }

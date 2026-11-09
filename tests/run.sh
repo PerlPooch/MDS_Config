@@ -17,7 +17,7 @@ LIBRARY_DIR=$(CDPATH= cd -- "$TEST_DIR/.." && pwd)
 : "${ARDUINOJSON_SRC:?Set ARDUINOJSON_SRC to the ArduinoJson 7 src directory}"
 TEST_BUILD=$(mktemp -d)
 trap 'rm -rf "$TEST_BUILD"' EXIT HUP INT TERM
-for test in legacy registry dump batch readonly validator signed; do
+for test in legacy registry dump batch readonly validator signed errors; do
  c++ -std=c++17 -Wall -Wextra -I"$TEST_DIR/host" -I"$LIBRARY_DIR/src" -I"$ARDUINOJSON_SRC" "$TEST_DIR/$test.cpp" "$LIBRARY_DIR/src/MDS_Config.cpp" -o "$TEST_BUILD/$test"
  "$TEST_BUILD/$test"
 done

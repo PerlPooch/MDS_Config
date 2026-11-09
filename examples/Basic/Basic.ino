@@ -30,7 +30,7 @@ MDS_Config config;
 void setup() {
     Serial.begin(115200);
 
-    if (!config.setSettings(settings) || !config.setup()) {
+    if (!config.setSettings(settings) || !config.begin()) {
         Serial.println(config.lastError());
         return;
     }

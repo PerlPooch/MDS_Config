@@ -22,7 +22,7 @@ int main(){
  const MDS_ConfigSetting settings[]={ {"even",Type::Unsigned,Access::ReadWrite,true,nullptr,2,0,10,false,false,allowed} };
  MDS_Config config;assert(config.setSettings(settings));JsonDocument value;value["v"]=3;assert(!config.set("even",value["v"]));assert(config.get("even").as<int>()==2);
  JsonDocument group;group["even"]=5;assert(!config.set(group));assert(config.get("even").as<int>()==2);
- value["v"]=4;assert(config.set("even",value["v"]));assert(config.setup());LittleFS.files["/config.json"]="{\"even\":7}";assert(!config.load());assert(config.get("even").as<int>()==4);
+ value["v"]=4;assert(config.set("even",value["v"]));assert(config.begin());LittleFS.files["/config.json"]="{\"even\":7}";assert(!config.load());assert(config.get("even").as<int>()==4);
  auto invalid=settings[0];invalid.defaultUnsigned=3;assert(!config.setSettings(&invalid,1));
  puts("PASS: optional application validators check defaults, single/group edits and persisted loads without partial mutation.");
 }
