@@ -1,6 +1,6 @@
 #!/bin/sh
 # ===========================================================================
-# MDS_Config 0.7.0 - https://home.marcspencer.com/mds-config
+# MDS_Config - https://home.marcspencer.com/mds-config
 #
 # Copyright (c) 2026 Marc D. Spencer.
 # All Rights Reserved under the applicable license.
